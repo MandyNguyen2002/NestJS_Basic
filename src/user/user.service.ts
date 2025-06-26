@@ -1,31 +1,23 @@
 /* eslint-disable prettier/prettier */
 import { Injectable } from '@nestjs/common';
-import { CreateUserDto } from './dto/create-user.dto';
+// import { CreateUserDto } from './dto/create-user.dto';
 import { LoginDto } from './dto/login.dto';
+import { Model } from 'mongoose'
+import { User } from './schemas/user.schemas';
+import { InjectModel } from '@nestjs/mongoose';
+
 
 @Injectable()
 export class UserService {
-  private users: (CreateUserDto & { username: string; password: string })[] = [];
+  constructor(@InjectModel(User.name) private userModel: Model<User>) { }
 
-  register(createUserDto: CreateUserDto) {
-  const user = createUserDto as CreateUserDto & { username: string; password: string };
-  this.users.push(user);
-  return {
-    message: 'User registered successfully',
-    user,
-  };
-}
+  async login(loginDto: LoginDto) {
+    const user = await this.userModel.findOne({ username: loginDto.username });
 
-  login(loginDto: LoginDto) {
-    const user = this.users.find(
-      (u) =>
-        u.username === loginDto.username && u.password === loginDto.password,
-    );
-
-    if (user) {
-      return { message: 'Login successful' };
-    } else {
+    if (!user || user.password !== loginDto.password) {
       return { message: 'Invalid credentials' };
     }
+
+    return { message: 'Login successful' };
   }
 }
