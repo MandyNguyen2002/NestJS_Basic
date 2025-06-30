@@ -13,7 +13,7 @@ export class CreateUserDto {
   readonly email: string;
 
   @IsOptional()
-  @IsPhoneNumber('US')
+  @IsPhoneNumber()
   readonly phone?: string;
 
   @IsOptional()
