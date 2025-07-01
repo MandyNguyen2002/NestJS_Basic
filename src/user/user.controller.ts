@@ -5,14 +5,13 @@ import {
   Controller,
   Post,
   Body,
-  HttpCode,
   UseGuards,
   Req,
   Get,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
-import { LoginDto } from './dto/login.dto';
+
 import { AuthGuard } from '@nestjs/passport';
 import { Request } from 'express';
 import { RolesGuard } from 'src/auth/roles.guard';
@@ -27,18 +26,11 @@ export class UserController {
     return this.userService.register(createUserDto);
   }
 
-  @Post('login')
-  @HttpCode(200)
-  login(@Body() loginDto: LoginDto) {
-    return this.userService.login(loginDto);
-  }
-
-  @Get('profile')
   @UseGuards(AuthGuard('jwt'))
+  @Get('profile')
   getProfile(@Req() req: Request & { user: any }) {
     return req.user;
   }
-
 
   @Get('all')
   @UseGuards(AuthGuard('jwt'), RolesGuard)
