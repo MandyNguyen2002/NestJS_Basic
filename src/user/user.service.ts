@@ -66,12 +66,20 @@ export class UserService {
     };
   }
 
-  async findByUsername(username: string) {
-    return this.userModel.findOne({ username }).select('-password').exec();
+  async findByUsername(username: string, includePassword = false) {
+    const query = this.userModel.findOne({ username });
+    if (!includePassword) {
+      query.select('-password');
+    }
+    return query.exec();
   }
 
   async getUserById(id: string) {
     return this.userModel.findById(id).select('-password').exec();
+  }
+
+  async getProfile(userId: string) {
+    return this.getUserById(userId);
   }
 
   async getAllUsers() {
